@@ -17,13 +17,13 @@ module.exports = function(grunt) {
         'desktop': {
             //zepto event ajax form ie
             src: ['src/tg.js', 'src/page.js', 'src/io.js', 'src/user.js', 'src/ui.js'],
-            dest: '../<%= package.name %>.js',
+            dest: './dist/<%= package.name %>.js',
             nonull: true
         },
         'degrade': {
             //zepto event ajax form ie
             src: ['src/tg.js', 'src/page.js', 'src/io.js', 'src/user.js', 'src/ui.js', 'src/degrade.js'],
-            dest: '../<%= package.name %>-degrade.js',
+            dest: './dist/<%= package.name %>-degrade.js',
             nonull: true
         }
     };

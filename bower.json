@@ -1,8 +1,9 @@
 {
   "name": "tgjs",
   "version": "0.1.0",
-  "authors": [
-    "Su9er <liangchaohong@163.com>"
+  "main": [
+      "dist/tg.js",
+      "dist/tg-degrade.js"
   ],
   "description": "tgjs",
   "keywords": [
