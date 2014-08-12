@@ -1,0 +1,17 @@
+{
+    "name": "tg",
+    "version": "0.1.0",
+    "homepage": "http://tgnet.com",
+    "author": {
+        "name": "tg front-end team",
+        "url": ""
+    },
+    "license": {
+        "type": "MIT",
+        "url": "http://tgnet.com/"
+    },
+    "devDependencies": {
+        "grunt": "*",
+        "grunt-contrib-concat": "*"
+    }
+}

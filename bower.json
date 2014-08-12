@@ -1,0 +1,26 @@
+{
+  "name": "tgjs",
+  "version": "0.1.0",
+  "authors": [
+    "Su9er <liangchaohong@163.com>"
+  ],
+  "description": "tgjs",
+  "keywords": [
+    "tg",
+    "armer"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+      "armerjs": "*"
+  },
+  "devDependencies": {
+      "armerjs": "*"
+  }
+}
