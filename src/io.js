@@ -4,7 +4,7 @@
             data = data.split(sep)
         var s = data.shift();
         s = s == 1 ? 0 : s == 0 ? 999 : s;
-        if (s != 0 && data[0].indexOf('µÇÂ¼') >= 0)
+        if (s != 0 && data[0].indexOf('ç™»å½•') >= 0)
             s = 1
         if (s == 0) {
             return { Data: data, State: s}
@@ -29,9 +29,9 @@
     }
 
     /**
-     * »ñÈ¡JSONÆ÷
-     * @param {string|object} url µØÖ·»òÕßÅäÖÃ
-     * @param {object} [settings] ÅäÖÃ
+     * è·å–JSONå™¨
+     * @param {string|object} url åœ°å€æˆ–è€…é…ç½®
+     * @param {object} [settings] é…ç½®
      * @returns {JSONGetter}
      * @constructor
      */
@@ -56,7 +56,7 @@
     }
 
     /**
-     * JSONGetterµÄ¼àÌıÆ÷£¬ÓÃÈ¥µ÷ÊÔ
+     * JSONGetterçš„ç›‘å¬å™¨ï¼Œç”¨å»è°ƒè¯•
      * @param {string} url
      * @param {function|*} dataFactory
      * @param {number} [delay]
@@ -88,17 +88,17 @@
             var data = ajaxOptions.data;
             if ($.isArrayLike(data)) data = $.serializeNodes(data, ',');
             var start = $.now();
-            console.groupCollapsed('%c·¢ËÍÁËÒ»¸öTG.JSONGetter.SpyÇëÇóÖÁ %s', 'color:#00F', ajaxOptions.url)
-            console.log('ÇëÇóÊı¾İ %O', data);
+            console.groupCollapsed('%cå‘é€äº†ä¸€ä¸ªTG.JSONGetter.Spyè¯·æ±‚è‡³ %s', 'color:#00F', ajaxOptions.url)
+            console.log('è¯·æ±‚æ•°æ® %O', data);
             console.groupEnd();
             return $.when(this.dataFactory(data, ajaxOptions)).done(function(s){
-                console.groupCollapsed('%c·µ»ØÁËÒ»¸öTG.JSONGetter.SpyÏìÓ¦´Ó %s', 'color:#00F', ajaxOptions.url)
-                console.log('ºÄÊ±Ô¼ %i ms', $.now() - start);
-                console.log('ÏìÓ¦Êı¾İ %O', s);
+                console.groupCollapsed('%cè¿”å›äº†ä¸€ä¸ªTG.JSONGetter.Spyå“åº”ä» %s', 'color:#00F', ajaxOptions.url)
+                console.log('è€—æ—¶çº¦ %i ms', $.now() - start);
+                console.log('å“åº”æ•°æ® %O', s);
                 console.groupEnd();
             }).fail(function(){
-                console.groupCollapsed('%c·µ»ØÁËÒ»¸öTG.JSONGetter.SpyÏìÓ¦´Ó %s', 'color:#F00', ajaxOptions.url)
-                console.log('ºÄÊ±Ô¼ %i ms', $.now() - start);
+                console.groupCollapsed('%cè¿”å›äº†ä¸€ä¸ªTG.JSONGetter.Spyå“åº”ä» %s', 'color:#F00', ajaxOptions.url)
+                console.log('è€—æ—¶çº¦ %i ms', $.now() - start);
                 console.groupEnd();
             }).done(ajaxOptions.success).fail(ajaxOptions.error).promise();
         },
@@ -141,7 +141,7 @@
             if (this.retry || !this.settings.obstruction || !this._ajax || this._ajax.state() != 'pending') {
                 var s = {}
                 if (this.settings.beforeSend && (false === this.settings.beforeSend(sendData, s))) {
-                    $.extend(s, {State: -500, Msg:'ÓÉÓÚĞèÇóÇëÇó±»ÖĞ¶Ï'});
+                    $.extend(s, {State: -500, Msg:'ç”±äºéœ€æ±‚è¯·æ±‚è¢«ä¸­æ–­'});
                     request.branchAjaxResult(dfd, s);
                 }  else {
                     ajaxOptions = {
@@ -155,7 +155,7 @@
                         },
                         success: function (data) {
                             var err = 0;
-                            //Èç¹ûÃ»ÓĞdata
+                            //å¦‚æœæ²¡æœ‰data
                             data = data || { State: -201 };
                             if (typeof data == 'string')
                                 try {
@@ -164,7 +164,7 @@
                                     err = 1;
                                 }
                             if (err || typeof data != 'object' || !('State' in data) && !('Data' in data)) {
-                                // Èç¹û×ª»»´íÎó£¬Ôòµ±×÷×Ö·û´®ÀàĞÍ
+                                // å¦‚æœè½¬æ¢é”™è¯¯ï¼Œåˆ™å½“ä½œå­—ç¬¦ä¸²ç±»å‹
                                 if (err && data.charAt(1) == ':' || $.isArray(data) && typeof data[0] == 'number')
                                     data = oldAjaxDataConventer(data, ':');
                                 else
@@ -191,14 +191,14 @@
             var request = this;
             var state = originData.State;
             var dataArray = [this._originData = originData, this._data = originData.Data, this._state = originData.State, this._msg = originData.Msg];
-            // 0 , undefined, null, ''¶¼ÊÓÎªÕıÈ·
+            // 0 , undefined, null, ''éƒ½è§†ä¸ºæ­£ç¡®
             if (!state)
                 dfd.resolveWith(this, dataArray);
             else if (state < -999)
                 dfd.notifyWith(this, dataArray);
             else {
                 //try {
-                dataArray[3] = dataArray[3] || 'ÏµÍ³´íÎó';
+                dataArray[3] = dataArray[3] || 'ç³»ç»Ÿé”™è¯¯';
                 if (this.settings.retune) {
                     dataArray[0].retry = true;
                     dfd.notifyWith(this, dataArray);
@@ -220,7 +220,7 @@
 
                 //} catch(e){
                 //dataArray[0].State = dataArray[2] = -109;
-                //dataArray[0].Msg = dataArray[3] = 'ÏµÍ³Òì³£'
+                //dataArray[0].Msg = dataArray[3] = 'ç³»ç»Ÿå¼‚å¸¸'
                 //dfd.rejectWith(this, dataArray);
                 //}
             }
@@ -252,9 +252,9 @@
     };
 
     JSONGetter.defaultErrHandler = function(D){
-        var msg = D.Msg || 'ÏµÍ³´íÎó';
+        var msg = D.Msg || 'ç³»ç»Ÿé”™è¯¯';
         if (D.State > 0 || D.State < -499) alert(msg);
-        else alert('(´íÎóÂë£º'+ D.State + ")" + msg + '\n' + 'ÇëÉÔºòÖØÊÔ»òÁªÏµ¿Í·ş!');
+        else alert('(é”™è¯¯ç ï¼š'+ D.State + ")" + msg + '\n' + 'è¯·ç¨å€™é‡è¯•æˆ–è”ç³»å®¢æœ!');
     };
 
     TG.JSONGetter = JSONGetter;

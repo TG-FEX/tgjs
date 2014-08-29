@@ -17,152 +17,38 @@ TG.JSON = {
     stringify: JSON.stringify
 };
 
-// TG.timer ÑÓ³ÙÖ´ÐÐ
-TG.Timer = function(){
-    var timerList = [], timerID = 0;
-    var Timer = function( interval, num ){
-        //if (this == window) return new Timer(interval, num);
-        var args = _.argsFormat([function(arg){ return !isNaN(arg); }, "uint"], [20, 0]);
-        this.interval = Math.max(20, args[0]);
-        this.runNum = 0;
-        this.num = args[1];
-        this.id = timerID;
-        this.timer = null;
-        this.running = false;
-        timerID++;
-    };
-    Timer.prototype.bind = function( fn ){
-        if ($.isFunction(fn)) {
-            var id = this.id;
-            if (!timerList[id])
-                timerList[id] = [];
-            timerList[id].push(fn);
-        }
-    };
-    Timer.prototype.start = function(){
-        if (!this.running && (this.num == 0 || this.num > this.runNum)) {
-            this.running = true;
-            var _this = this;
-            function run(){
-                _this.runNum++;
-                if (_this.num != 0 && _this.num <= _this.runNum)
-                    _this.stop();
-                var list = timerList[_this.id];
-                for (var i = 0; i < list.length; i++) {
-                    list[i]();
-                }
-            }
-            this.timer = setInterval(run, this.interval);
-        }
-    };
-    Timer.prototype.reset = function(){
-        this.pause();
-        this.runNum = 0;
-    };
-    Timer.prototype.stop = function(){
-        this.pause();
-        this.runNum = this.num;
-    };
-    Timer.prototype.pause = function(){
-        this.running = false;
-        clearInterval(this.timer);
-    };
-    Timer.prototype.unbind = function(){
-        timerList[this.id] = [];
-    };
-    return function(interval, num){
-        var t = new Timer(interval, num);
-        return {
-            start: function(){ t.start(); },
-            bind: function(fn){ t.bind(fn); },
-            reset: function(){ t.reset(); },
-            stop: function(){ t.stop(); },
-            pause: function(){ t.pause(); },
-            unbind: function(){ t.unbind(); },
-            runNum: function(num){
-                if(num === undefined)
-                    return t.runNum;
-                else
-                    t.runNum = Math.max(0, parseInt(num));
-            }
+TG.Timer = function(interval, num){
+    num = num || 1;
+    var t = $.Timer(true, interval, num);
+    return {
+        start: function(){ t.start(); },
+        bind: function(fn){ t.on('tick', fn); },
+        reset: function(){ t.reset(); },
+        stop: function(){ t.stop(); },
+        pause: function(){ t.pause(); },
+        unbind: function(){ t.off('tick'); },
+        runNum: function(num){
+            if(num === undefined)
+                return t.tickNum;
+            else
+                t.tickNum = Math.max(0, parseInt(num));
         }
     }
-}();
+};
 
 (function () {
     window._ = function(){}
 
     $.extend(_, {
-        size: function(obj){
-            return $.isArrayLike(obj) ? obj.length: Object.keys(obj).length;
-        },
-        reduce : function(obj, iterator, memo, context) {
-            var initial = arguments.length > 2;
-            if (obj == null) obj = [];
-            if (obj.reduce) {
-                if (context) iterator = iterator.bind(context);
-                return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
-            }
-            $.each(obj, function(index, value) {
-                if (!initial) {
-                    memo = value;
-                    initial = true;
-                } else {
-                    memo = iterator.call(context, memo, value, index);
-                }
-            });
-            if (!initial) throw new TypeError('Reduce of empty array with no initial value');
-            return memo;
-        },
+        size: $.Object.size,
+        reduce : $.Object.reduce,
         type: $.type,
-        argsFormat: function(){
-            function inType( type, arg ){
-                if(!type)return true;
-                if($.isFunction(type))return type(arg);
-                switch(type){
-                    case "number":
-                    case "string":
-                    case "boolean":
-                    case "object":
-                    case "function":
-                    case "array": return _.type(arg, type);
-                    case "int":  return !isNaN(arg) && parseInt(arg) == arg;
-                    case "uint": return !isNaN(arg) && parseInt(arg) >= 0;
-                    case "notNull": return arg !== null && arg !== undefined;
-                    case "notEmpty": return !!arg;
-                    default: return arg instanceof (type);
-                }
-            }
-            function inTypes( types, arg ){
-                var r = false;
-                if (typeof(types) == "string" && types.indexOf(",") > -1) {
-                    types = types.split(",");
-                    for (var i = types.length; i--;) {
-                        r = inType(types[i], arg);
-                        if (r)
-                            break;
-                    }
-                }else{
-                    r = inType(types, arg);
-                }
-                return r;
-            }
-            return function( types, defaultVals ){
-                var args = arguments.callee.caller.arguments,
-                    a = {callee: args.callee },
-                    len = 0;
-                defaultVals = defaultVals || [];
-                for(var i = 0, j = 0; i < types.length; i++){
-                    var item = types[i];
-                    if(inTypes(item, args[j]))
-                        a[len++] = args[j++];
-                    else
-                        a[len++] = defaultVals[i];
-                }
-                a.length = len;
-                return a;
-            }
-        }()
+        argsFormat: function(conditions, defaults){
+            var args = arguments.callee.caller.arguments;
+            args = $.argsArrange(args, conditions, defaults);
+            args.callee = arguments.callee;
+            return args;
+        }
     });
 
     var checkTest = function(){
@@ -195,28 +81,28 @@ TG.Timer = function(){
         'tel' : [/^[\d\-()]{6,20}$/],
         'qq' : [/^\d{5,16}$/],
         'cin' : [function(){
-            var wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ];// ¼ÓÈ¨Òò×Ó
-            var valideCode = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ];// Éí·ÝÖ¤ÑéÖ¤Î»Öµ.10´ú±íX
+            var wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ];// ï¿½ï¿½È¨ï¿½ï¿½ï¿½ï¿½
+            var valideCode = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ];// ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½Ö¤Î»Öµ.10ï¿½ï¿½ï¿½X
             var isValidID = function (idCard) {
                 idCard = $.trim(idCard);
                 if (idCard.length == 15) {
                     return isValidBrithday_15(idCard);
                 } else if (idCard.length == 18) {
-                    var a_idCard = idCard.split("");// µÃµ½Éí·ÝÖ¤Êý×é
+                    var a_idCard = idCard.split("");// ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½
                     return isValidBrithday_18(idCard) && isValidCheckcode(a_idCard);
                 } else {
                     return false;
                 }
             };
             var isValidCheckcode = function (a_idCard) {
-                var sum = 0; // ÉùÃ÷¼ÓÈ¨ÇóºÍ±äÁ¿
+                var sum = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½Í±ï¿½ï¿½ï¿½
                 if (a_idCard[17].toLowerCase() == 'x') {
-                    a_idCard[17] = 10;// ½«×îºóÎ»ÎªxµÄÑéÖ¤ÂëÌæ»»Îª10·½±ãºóÐø²Ù×÷
+                    a_idCard[17] = 10;// ï¿½ï¿½ï¿½ï¿½ï¿½Î»Îªxï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½æ»»Îª10ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
                 for ( var i = 0; i < 17; i++) {
-                    sum += wi[i] * a_idCard[i];// ¼ÓÈ¨ÇóºÍ
+                    sum += wi[i] * a_idCard[i];// ï¿½ï¿½È¨ï¿½ï¿½ï¿½
                 }
-                var valCodePosition = sum % 11;// µÃµ½ÑéÖ¤ÂëËùÎ»ÖÃ
+                var valCodePosition = sum % 11;// ï¿½Ãµï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
                 return a_idCard[17] == valideCode[valCodePosition];
             };
             var isValidBrithday_18 = function (idCard18){
@@ -224,7 +110,7 @@ TG.Timer = function(){
                 var month = idCard18.substring(10,12);
                 var day = idCard18.substring(12,14);
                 var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));
-                // ÕâÀïÓÃgetFullYear()»ñÈ¡Äê·Ý£¬±ÜÃâÇ§Äê³æÎÊÌâ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½getFullYear()ï¿½ï¿½È¡ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½Ç§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 return !(temp_date.getFullYear() != parseFloat(year)
                     || temp_date.getMonth() != parseFloat(month) - 1
                     || temp_date.getDate() != parseFloat(day));
@@ -234,7 +120,7 @@ TG.Timer = function(){
                 var month = idCard15.substring(8,10);
                 var day = idCard15.substring(10,12);
                 var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));
-                // ¶ÔÓÚÀÏÉí·ÝÖ¤ÖÐµÄÄãÄêÁäÔò²»Ðè¿¼ÂÇÇ§Äê³æÎÊÌâ¶øÊ¹ÓÃgetYear()·½·¨
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è¿¼ï¿½ï¿½Ç§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½getYear()ï¿½ï¿½ï¿½ï¿½
                 return !(temp_date.getYear() != parseFloat(year)
                     || temp_date.getMonth() != parseFloat(month) - 1
                     || temp_date.getDate() != parseFloat(day));
@@ -244,6 +130,36 @@ TG.Timer = function(){
     };
 })();
 
+$.fn.popup = function(){
+    this.modal();
+
+    var m = this.modal();
+    var that = this;
+
+    m.on('open', function(){
+        that.trigger('mask-open')
+    }).on('opened', function(){
+        that.trigger('mask-complete')
+    }).on('close', function(){
+        that.trigger('mask-exit')
+    }).on('closed', function(){
+        that.trigger('mask-close')
+    });
+
+    this.find('.btn-close').click(function(){
+        m.trigger('close');
+    });
+    m.open();
+    that.trigger('mask-open')
+};
+
+$.fn.unmask = function(){
+    var m = this.data('ui-modal');
+    if (m) {
+        m.trigger('close');
+    }
+    return this;
+};
 
 (function () {
     var regURL = /http:/;
@@ -308,94 +224,38 @@ TG.Timer = function(){
     };
 })();
 TG.UI = {
-    Flash: function () {
-        var UNDEF = "undefined",
-            OBJECT = "object",
-            SHOCKWAVE_FLASH = "Shockwave Flash",
-            SHOCKWAVE_FLASH_AX = "ShockwaveFlash.ShockwaveFlash",
-            FLASH_MIME_TYPE = "application/x-shockwave-flash",
-            d = null,
-            nav = navigator,
-            win = window,
-            playerVersion = [0, 0, 0];
-
-        if (typeof nav.plugins != UNDEF && typeof nav.plugins[SHOCKWAVE_FLASH] == OBJECT) {
-            d = nav.plugins[SHOCKWAVE_FLASH].description;
-            if (d && !(typeof nav.mimeTypes != UNDEF && nav.mimeTypes[FLASH_MIME_TYPE] && !nav.mimeTypes[FLASH_MIME_TYPE].enabledPlugin)) { // navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin indicates whether plug-ins are enabled or disabled in Safari 3+
-                d = d.replace(/^.*\s+(\S+\s+\S+$)/, "$1");
-                playerVersion[0] = parseInt(d.replace(/^(.*)\..*$/, "$1"), 10);
-                playerVersion[1] = parseInt(d.replace(/^.*\.(.*)\s.*$/, "$1"), 10);
-                playerVersion[2] = /[a-zA-Z]/.test(d) ? parseInt(d.replace(/^.*[a-zA-Z]+(.*)$/, "$1"), 10) : 0;
+    Flash: {
+        version: $.support.flash,
+        append: function(parent, src, width, height, options) {
+            return $(TG.UI.Flash.getHTML(src, width, height, options)).appendTo(parent);
+        },
+        getHTML: function(src, width, height, options){
+            if (typeof height == 'object') {
+                options = height;
+                height = null;
             }
-        } else if (typeof win.ActiveXObject != UNDEF) {
-            try {
-                var a = new ActiveXObject(SHOCKWAVE_FLASH_AX);
-                if (a) { // a will return null when ActiveX is disabled
-                    d = a.GetVariable("$version");
-                    if (d) {
-                        d = d.split(" ")[1].split(",");
-                        playerVersion = [parseInt(d[0], 10), parseInt(d[1], 10), parseInt(d[2], 10)];
-                    }
-                }
+            if (typeof width == 'object') {
+                options = width;
+                width = null;
             }
-            catch (e) { }
+            return $.Flash(src, $.extend(options, {
+                width: width,
+                height: height
+            })).toString();
         }
-        return $.extend(function(){
-        }, {
-            version: playerVersion,
-            append: function(parent, src, width, height, options){
-                var $e = $(TG.UI.Flash.getHTML(src, width, height, options))
-                $(parent).append($e);
-                return $e;
-            },
-            getHTML: function (src, width, height, options) {
-                if (typeof height == 'object') {
-                    options = height;
-                    height = null;
-                }
-                if (typeof width == 'object') {
-                    options = width;
-                    width = null;
-                }
-                var size = (width ? (' width="' + width + '" ') : '') + (height ? (' height="' + height + '"'): '')
-                options = $.extend({
-                    wmode: "transparent",
-                    quality: "high"
-                }, options || {});
-                var obj = '<object' + (options.id ? ' id="' + options.id + '"' : '') + ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"' + size + '>',
-                    embed = '<embed pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"' + size;
-                obj += '<param name="movie" value="' + src + '" />';
-                embed += ' src="' + src + '"';
-                for (var n in options) {
-                    if (n.toLowerCase() != "id") {
-                        obj += '<param name="' + n + '" value="' + options[n] + '" />';
-                        embed += ' ' + n + '="' + options[n] + '"';
-                    } else {
-                        embed += ' name="' + options[n] + '"';
-                    }
-                }
-                embed += '></embed>';
-                obj += embed + '</object>';
-                return obj;
-            }
-        });
-    }()
+    }
 };
-
-$.extend(TG, {'loadScript' : function(src, success, error){
-    return $.ajax({url:src, success:success, error:error})}
-});
 
 (function($){
     var loadList = {};
     /**
-     * ¼ÓÔØµ¥¸öjsÎÄ¼þ»ò¶à¸öÓÐÒÀÀµ¹ØÏµµÄjsÎÄ¼þ£¬Í¬Ê±¶Ô²»Í¬¼ÓÔØÇé¿ö·Ö±ð´¦Àí
-     * @param {string|array} src   µ¥¸öjsÎÄ¼þurl»òÕß¶à¸öÓÐÒÀÀµ¹ØÏµµÄjsÎÄ¼þurlÊý×é
-     * @param {function} [success]   ´¦Àí¼ÓÔØ³É¹¦Çé¿öµÄº¯Êý
-     * @param {function} [fail]      ´¦Àí¼ÓÔØÊ§°ÜÇé¿öµÄº¯Êý
-     * @param {boolean} [cache]      ÊÇ·ñÐèÒª»º´æjsÎÄ¼þ£¬Ä¬ÈÏ»º´æ
-     * @param {object} [deferred]    deferred¶ÔÏó£¬ÒÀ¾Ýjs¼ÓÔØÇé¿öÀ´¶ÔÍâ²¿deferred¶ÔÏó½øÐÐ´¦Àí
-     * @returns {object}    ·µ»Øjs¼ÓÔØ¹ý³ÌÉú³ÉµÄdeferred¶ÔÏó£¬Ìá¹©¸øÍâ²¿²Ù×÷µÄAPI
+     * ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½jsï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½jsï¿½Ä¼ï¿½ï¿½ï¿½Í¬Ê±ï¿½Ô²ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½
+     * @param {string|array} src   ï¿½ï¿½ï¿½ï¿½jsï¿½Ä¼ï¿½urlï¿½ï¿½ï¿½ß¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½jsï¿½Ä¼ï¿½urlï¿½ï¿½ï¿½ï¿½
+     * @param {function} [success]   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø³É¹ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½
+     * @param {function} [fail]      ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½
+     * @param {boolean} [cache]      ï¿½Ç·ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½jsï¿½Ä¼ï¿½ï¿½ï¿½Ä¬ï¿½Ï»ï¿½ï¿½ï¿½
+     * @param {object} [deferred]    deferredï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½jsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â²¿deferredï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½
+     * @returns {object}    ï¿½ï¿½ï¿½ï¿½jsï¿½ï¿½ï¿½Ø¹ï¿½ï¿½ï¿½ï¿½Éµï¿½deferredï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½â²¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½API
      */
     var jsLoader = function (src, success, fail, cache, deferred) {
         var d, rDeferred, args = _.argsFormat(["string,array", "function", "function", "boolean", function(arg){ return !!(arg && arg.done)}], [ undefined, function(){}, function(){}, true, undefined]);
@@ -422,44 +282,21 @@ $.extend(TG, {'loadScript' : function(src, success, error){
                         _cache = cache;
                     d.then(function(){
                         TG.jsLoader(src[num], success, fail, _cache, _d)
-                    }, fail);/*.done(function(){
-                     TG.jsLoader(src[num], success, fail, _cache, _d)
-                     }).fail(fail);*/
+                    }, fail);
                     return arguments.callee(num + 1, _d);
                 }
                 return d;
             })(1, d);
-            rDeferred.then(success, fail);/*.done(success).fail(fail);*/
+            rDeferred.then(success, fail);
             arguments.callee(src[0], success, fail, cache, d);
             return rDeferred;
         }
     }
-    $.extend(TG, {'jsLoader' : jsLoader});
-    $.fn.popup = function(){
-        this.modal();
-
-        var m = this.modal();
-        var that = this;
-
-        m.$element.on('open', function(){
-            that.trigger('mask-open')
-        });
-
-        this.modal();
-
-        this.find('.btn-close').click(function(){
-            m.close();
-        })
-        m.open();
-    }
-    $.fn.unmask = function(){
-        var m = this.data('ui-modal');
-        if (m) {
-            m.close();
-        }
-        return this;
-    }
-
+    $.extend(TG, {
+        loadScript : function(src, success, error){
+            return $.ajax({url:src, success:success, error:error})},
+        jsLoader : jsLoader
+    });
 })(jQuery);
 
 $.fn.bgiframe = function(left, top, parent, iframePop) {
@@ -469,7 +306,7 @@ $.fn.bgiframe = function(left, top, parent, iframePop) {
         if (left !== undefined)
             e.css({ top: top, left: left }).appendTo(parent ? parent : "body");
         if (ifPop) {
-            var iframe = $("iframe.popIframe", e), iframeMask = $("div.popIframeMask", e); //¼æÈÝdocumentÊÂ¼þ
+            var iframe = $("iframe.popIframe", e), iframeMask = $("div.popIframeMask", e); //ï¿½ï¿½ï¿½ï¿½documentï¿½Â¼ï¿½
             if (iframeMask.length == 0) {
                 iframeMask = $("<div/>").css({
                     "position": "absolute",
@@ -583,25 +420,11 @@ $.fn.bgiframe = function(left, top, parent, iframePop) {
                 }
                 if(form.length == 0)return undefined;
                 else{
-                    var data = {},
-                        inputs = filterInput(form);
-                    if(except)
-                        inputs = inputs.not(except);
-                    if(inputs.length == 0)
-                        return null;
-                    else{
-                        inputs.filter(":text,textarea,select,:checked,:password,input:hidden").each(function(){
-                            var $this = $(this), name = $this.attr("name"), val = $.trim($this.val());
-                            if (data[name]) {
-                                if (!(data[name] instanceof Array))
-                                    data[name] = [data[name]];
-                                data[name].push(val);
-                            }else{
-                                data[name] = val;
-                            }
-                        });
-                        return data;
-                    }
+                    var $input = $('textarea,select,input', form).not(":button,input:not(:checked)");
+                    $input = except ? $input.not(except) : $input;
+                    return $.serializeNodes($input, function(a){
+                        if (a.length == 1) return a[0];
+                    });
                 }
             },
             encode: function( free ){
