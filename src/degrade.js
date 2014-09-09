@@ -20,19 +20,13 @@ TG.JSON = {
 TG.Timer = function(interval, num){
     num = num || 1;
     var t = $.Timer(true, interval, num);
-    return {
-        start: function(){ t.start(); },
-        bind: function(fn){ t.on('tick', fn); },
-        reset: function(){ t.reset(); },
-        stop: function(){ t.stop(); },
-        pause: function(){ t.pause(); },
-        unbind: function(){ t.off('tick'); },
-        runNum: function(num){
-            if(num === undefined)
-                return t.tickNum;
-            else
-                t.tickNum = Math.max(0, parseInt(num));
-        }
+    t.bind = function(fn){ this.on('tick', fn); };
+    t.unbind = function(){ this.off('tick'); };
+    t.runNum = function(num){
+        if(num === undefined)
+            return this.tickNum;
+        else
+            this.tickNum = Math.max(0, parseInt(num));
     }
 };
 
