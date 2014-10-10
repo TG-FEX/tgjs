@@ -146,7 +146,7 @@ TG.User = {
                 //alert($.isEqual(_list[i], valueHash[i]))
                 if (mix.hasOwnProperty(i) && !$.isEqual(_list[i], valueHash[i])) {
                     // 如果不相等则赋值
-                    oldValue[i] = _list[i]
+                    oldValue[i] = _list[i];
                     if (valueHash.hasOwnProperty(i)) _list[i] = newValue[i] = valueHash[i]
                     else delete _list[i]
                 }
