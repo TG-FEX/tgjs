@@ -1,5 +1,5 @@
 /*!
- * tg - v0.1.0 - 2014-08-12 
+ * tg - v0.1.0 - 2014-10-18 
 * http://tgnet.com
  * Copyright (c) 2014 tg front-end team; Licensed MIT(http://tgnet.com/) 
  */
@@ -40,28 +40,28 @@ TG.check.condition = {
     'tel' : [/^[\d\-()]{6,20}$/],
     'qq' : [/^\d{5,16}$/],
     'cin' : [function(){
-        var wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ];// ¼ÓÈ¨Òò×Ó
-        var valideCode = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ];// Éí·İÖ¤ÑéÖ¤Î»Öµ.10´ú±íX
+        var wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ];// åŠ æƒå› å­
+        var valideCode = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ];// èº«ä»½è¯éªŒè¯ä½å€¼.10ä»£è¡¨X
         var isValidID = function (idCard) {
             idCard = $.trim(idCard);
             if (idCard.length == 15) {
                 return isValidBrithday_15(idCard);
             } else if (idCard.length == 18) {
-                var a_idCard = idCard.split("");// µÃµ½Éí·İÖ¤Êı×é
+                var a_idCard = idCard.split("");// å¾—åˆ°èº«ä»½è¯æ•°ç»„
                 return isValidBrithday_18(idCard) && isValidCheckcode(a_idCard);
             } else {
                 return false;
             }
         };
         var isValidCheckcode = function (a_idCard) {
-            var sum = 0; // ÉùÃ÷¼ÓÈ¨ÇóºÍ±äÁ¿
+            var sum = 0; // å£°æ˜åŠ æƒæ±‚å’Œå˜é‡
             if (a_idCard[17].toLowerCase() == 'x') {
-                a_idCard[17] = 10;// ½«×îºóÎ»ÎªxµÄÑéÖ¤ÂëÌæ»»Îª10·½±ãºóĞø²Ù×÷
+                a_idCard[17] = 10;// å°†æœ€åä½ä¸ºxçš„éªŒè¯ç æ›¿æ¢ä¸º10æ–¹ä¾¿åç»­æ“ä½œ
             }
             for ( var i = 0; i < 17; i++) {
-                sum += wi[i] * a_idCard[i];// ¼ÓÈ¨ÇóºÍ
+                sum += wi[i] * a_idCard[i];// åŠ æƒæ±‚å’Œ
             }
-            var valCodePosition = sum % 11;// µÃµ½ÑéÖ¤ÂëËùÎ»ÖÃ
+            var valCodePosition = sum % 11;// å¾—åˆ°éªŒè¯ç æ‰€ä½ç½®
             return a_idCard[17] == valideCode[valCodePosition];
         };
         var isValidBrithday_18 = function (idCard18){
@@ -69,7 +69,7 @@ TG.check.condition = {
             var month = idCard18.substring(10,12);
             var day = idCard18.substring(12,14);
             var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));
-            // ÕâÀïÓÃgetFullYear()»ñÈ¡Äê·İ£¬±ÜÃâÇ§Äê³æÎÊÌâ
+            // è¿™é‡Œç”¨getFullYear()è·å–å¹´ä»½ï¼Œé¿å…åƒå¹´è™«é—®é¢˜
             return !(temp_date.getFullYear() != parseFloat(year)
                 || temp_date.getMonth() != parseFloat(month) - 1
                 || temp_date.getDate() != parseFloat(day));
@@ -79,7 +79,7 @@ TG.check.condition = {
             var month = idCard15.substring(8,10);
             var day = idCard15.substring(10,12);
             var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));
-            // ¶ÔÓÚÀÏÉí·İÖ¤ÖĞµÄÄãÄêÁäÔò²»Ğè¿¼ÂÇÇ§Äê³æÎÊÌâ¶øÊ¹ÓÃgetYear()·½·¨
+            // å¯¹äºè€èº«ä»½è¯ä¸­çš„ä½ å¹´é¾„åˆ™ä¸éœ€è€ƒè™‘åƒå¹´è™«é—®é¢˜è€Œä½¿ç”¨getYear()æ–¹æ³•
             return !(temp_date.getYear() != parseFloat(year)
                 || temp_date.getMonth() != parseFloat(month) - 1
                 || temp_date.getDate() != parseFloat(day));
@@ -100,7 +100,7 @@ TG.Page = {};
             data = data.split(sep)
         var s = data.shift();
         s = s == 1 ? 0 : s == 0 ? 999 : s;
-        if (s != 0 && data[0].indexOf('µÇÂ¼') >= 0)
+        if (s != 0 && data[0].indexOf('ç™»å½•') >= 0)
             s = 1
         if (s == 0) {
             return { Data: data, State: s}
@@ -125,9 +125,9 @@ TG.Page = {};
     }
 
     /**
-     * »ñÈ¡JSONÆ÷
-     * @param {string|object} url µØÖ·»òÕßÅäÖÃ
-     * @param {object} [settings] ÅäÖÃ
+     * è·å–JSONå™¨
+     * @param {string|object} url åœ°å€æˆ–è€…é…ç½®
+     * @param {object} [settings] é…ç½®
      * @returns {JSONGetter}
      * @constructor
      */
@@ -152,7 +152,7 @@ TG.Page = {};
     }
 
     /**
-     * JSONGetterµÄ¼àÌıÆ÷£¬ÓÃÈ¥µ÷ÊÔ
+     * JSONGetterçš„ç›‘å¬å™¨ï¼Œç”¨å»è°ƒè¯•
      * @param {string} url
      * @param {function|*} dataFactory
      * @param {number} [delay]
@@ -184,17 +184,17 @@ TG.Page = {};
             var data = ajaxOptions.data;
             if ($.isArrayLike(data)) data = $.serializeNodes(data, ',');
             var start = $.now();
-            console.groupCollapsed('%c·¢ËÍÁËÒ»¸öTG.JSONGetter.SpyÇëÇóÖÁ %s', 'color:#00F', ajaxOptions.url)
-            console.log('ÇëÇóÊı¾İ %O', data);
+            console.groupCollapsed('%cå‘é€äº†ä¸€ä¸ªTG.JSONGetter.Spyè¯·æ±‚è‡³ %s', 'color:#00F', ajaxOptions.url)
+            console.log('è¯·æ±‚æ•°æ® %O', data);
             console.groupEnd();
             return $.when(this.dataFactory(data, ajaxOptions)).done(function(s){
-                console.groupCollapsed('%c·µ»ØÁËÒ»¸öTG.JSONGetter.SpyÏìÓ¦´Ó %s', 'color:#00F', ajaxOptions.url)
-                console.log('ºÄÊ±Ô¼ %i ms', $.now() - start);
-                console.log('ÏìÓ¦Êı¾İ %O', s);
+                console.groupCollapsed('%cè¿”å›äº†ä¸€ä¸ªTG.JSONGetter.Spyå“åº”ä» %s', 'color:#00F', ajaxOptions.url)
+                console.log('è€—æ—¶çº¦ %i ms', $.now() - start);
+                console.log('å“åº”æ•°æ® %O', s);
                 console.groupEnd();
             }).fail(function(){
-                console.groupCollapsed('%c·µ»ØÁËÒ»¸öTG.JSONGetter.SpyÏìÓ¦´Ó %s', 'color:#F00', ajaxOptions.url)
-                console.log('ºÄÊ±Ô¼ %i ms', $.now() - start);
+                console.groupCollapsed('%cè¿”å›äº†ä¸€ä¸ªTG.JSONGetter.Spyå“åº”ä» %s', 'color:#F00', ajaxOptions.url)
+                console.log('è€—æ—¶çº¦ %i ms', $.now() - start);
                 console.groupEnd();
             }).done(ajaxOptions.success).fail(ajaxOptions.error).promise();
         },
@@ -237,7 +237,7 @@ TG.Page = {};
             if (this.retry || !this.settings.obstruction || !this._ajax || this._ajax.state() != 'pending') {
                 var s = {}
                 if (this.settings.beforeSend && (false === this.settings.beforeSend(sendData, s))) {
-                    $.extend(s, {State: -500, Msg:'ÓÉÓÚĞèÇóÇëÇó±»ÖĞ¶Ï'});
+                    $.extend(s, {State: -500, Msg:'ç”±äºéœ€æ±‚è¯·æ±‚è¢«ä¸­æ–­'});
                     request.branchAjaxResult(dfd, s);
                 }  else {
                     ajaxOptions = {
@@ -251,7 +251,7 @@ TG.Page = {};
                         },
                         success: function (data) {
                             var err = 0;
-                            //Èç¹ûÃ»ÓĞdata
+                            //å¦‚æœæ²¡æœ‰data
                             data = data || { State: -201 };
                             if (typeof data == 'string')
                                 try {
@@ -259,8 +259,15 @@ TG.Page = {};
                                 } catch (e) {
                                     err = 1;
                                 }
-                            if (err || typeof data != 'object' || !('State' in data) && !('Data' in data)) {
-                                // Èç¹û×ª»»´íÎó£¬Ôòµ±×÷×Ö·û´®ÀàĞÍ
+                            if (!err && typeof data == 'object' && ('state_code' in data || 'message' in data)) {
+                                data = {
+                                    State: parseInt(data['state_code']),
+                                    Data: data.data,
+                                    Msg: data.message,
+                                    HelpLink: data['help_link']
+                                }
+                            } else if (err || typeof data != 'object' || !('State' in data) && !('Data' in data)) {
+                                // å¦‚æœè½¬æ¢é”™è¯¯ï¼Œåˆ™å½“ä½œå­—ç¬¦ä¸²ç±»å‹
                                 if (err && data.charAt(1) == ':' || $.isArray(data) && typeof data[0] == 'number')
                                     data = oldAjaxDataConventer(data, ':');
                                 else
@@ -287,14 +294,14 @@ TG.Page = {};
             var request = this;
             var state = originData.State;
             var dataArray = [this._originData = originData, this._data = originData.Data, this._state = originData.State, this._msg = originData.Msg];
-            // 0 , undefined, null, ''¶¼ÊÓÎªÕıÈ·
+            // 0 , undefined, null, ''éƒ½è§†ä¸ºæ­£ç¡®
             if (!state)
                 dfd.resolveWith(this, dataArray);
             else if (state < -999)
                 dfd.notifyWith(this, dataArray);
             else {
                 //try {
-                dataArray[3] = dataArray[3] || 'ÏµÍ³´íÎó';
+                dataArray[3] = dataArray[3] || 'ç³»ç»Ÿé”™è¯¯';
                 if (this.settings.retune) {
                     dataArray[0].retry = true;
                     dfd.notifyWith(this, dataArray);
@@ -316,7 +323,7 @@ TG.Page = {};
 
                 //} catch(e){
                 //dataArray[0].State = dataArray[2] = -109;
-                //dataArray[0].Msg = dataArray[3] = 'ÏµÍ³Òì³£'
+                //dataArray[0].Msg = dataArray[3] = 'ç³»ç»Ÿå¼‚å¸¸'
                 //dfd.rejectWith(this, dataArray);
                 //}
             }
@@ -348,9 +355,9 @@ TG.Page = {};
     };
 
     JSONGetter.defaultErrHandler = function(D){
-        var msg = D.Msg || 'ÏµÍ³´íÎó';
+        var msg = D.Msg || 'ç³»ç»Ÿé”™è¯¯';
         if (D.State > 0 || D.State < -499) alert(msg);
-        else alert('(´íÎóÂë£º'+ D.State + ")" + msg + '\n' + 'ÇëÉÔºòÖØÊÔ»òÁªÏµ¿Í·ş!');
+        else alert('(é”™è¯¯ç ï¼š'+ D.State + ")" + msg + '\n' + 'è¯·ç¨å€™é‡è¯•æˆ–è”ç³»å®¢æœ!');
     };
 
     TG.JSONGetter = JSONGetter;
@@ -443,9 +450,9 @@ TG.User = {
                 var data;
                 switch(error){
                     case 'timeout' :
-                        data = {State : -1, Msg:'µÇÂ¼³¬Ê±£¬ÇëÖØÊÔ¡£'}; break
+                        data = {State : -1, Msg:'ç™»å½•è¶…æ—¶ï¼Œè¯·é‡è¯•ã€‚'}; break
                     default :
-                        data = { State: -2, Msg: 'µÇÂ¼Êı¾İÒì³££¬ÇëÖØÊÔ¡£' };
+                        data = { State: -2, Msg: 'ç™»å½•æ•°æ®å¼‚å¸¸ï¼Œè¯·é‡è¯•ã€‚' };
                 }
                 dfd.reject(data);
             }
@@ -470,9 +477,9 @@ TG.User = {
                 var data;
                 switch(error){
                     case 'timeout' :
-                        data = {State : -1, Msg:'×¢Ïú³¬Ê±'}; break
+                        data = {State : -1, Msg:'æ³¨é”€è¶…æ—¶'}; break
                     default :
-                        data = { State: -2, Msg: '×¢ÏúÊ§°Ü£¬ÇëÖØÊÔ¡£' };
+                        data = { State: -2, Msg: 'æ³¨é”€å¤±è´¥ï¼Œè¯·é‡è¯•ã€‚' };
                 }
                 dfd.resolve(data);
             }
@@ -500,7 +507,7 @@ TG.User = {
         try {
             result = JSON.parse(value)
         } catch(e) {}
-        // ²»ÊÇ¶ÔÏóµÄÊ±ºò£¬½«ÆäÖµÎª¿Õ¶ÔÏó
+        // ä¸æ˜¯å¯¹è±¡çš„æ—¶å€™ï¼Œå°†å…¶å€¼ä¸ºç©ºå¯¹è±¡
         if (!$.isPlainObject(result)) result = {}
         return result
     }
@@ -511,21 +518,21 @@ TG.User = {
         userTicker: false,
         get: function(key){
             if (key) return _list[key]
-            // ÏÈ±¸·İÒ»ÏÂ£¬ÒÔÃâ±»Îó¸Ä
+            // å…ˆå¤‡ä»½ä¸€ä¸‹ï¼Œä»¥å…è¢«è¯¯æ”¹
             else return $.extend({}, _list);
         },
         init: function(){
-            //ChromeÏÂ(14.0.794.0)ÖØĞ´ÁËdocument.domainÖ®ºó»áµ¼ÖÂonstorage²»´¥·¢
-            //Ö§³ÖlocalStorageµÄÇé¿ö
+            //Chromeä¸‹(14.0.794.0)é‡å†™äº†document.domainä¹‹åä¼šå¯¼è‡´onstorageä¸è§¦å‘
+            //æ”¯æŒlocalStorageçš„æƒ…å†µ
             var callback = this._callback.bind(this);
             if ('onstorage' in document) {
-                // IE°óµ½document;
+                // IEç»‘åˆ°document;
                 document.attachEvent("onstorage", callback)
             } else if ($.support.localStorage) {
-                // ±ê×¼ä¯ÀÀÆ÷°óµ½window;
+                // æ ‡å‡†æµè§ˆå™¨ç»‘åˆ°window;
                 window.addEventListener("storage", callback)
             } else if (this.userTicker) {
-                // ÏÈÅÙ¸ö¿Ó
+                // å…ˆåˆ¨ä¸ªå‘
             } else {
                 // IE678
                 window.attachEvent('onfocus', callback)
@@ -534,13 +541,13 @@ TG.User = {
         },
         _callback: function(e){
             var that = this;
-            //IEÏÂ²»Ê¹ÓÃsetTimeout¾¹È»»ñÈ¡²»µ½¸Ä±äºóµÄÖµ?!
+            //IEä¸‹ä¸ä½¿ç”¨setTimeoutç«Ÿç„¶è·å–ä¸åˆ°æ”¹å˜åçš„å€¼?!
             $.nextTick(function(){
                 e = e || window.storageEvent
-                //Èô±ä»¯µÄkey²»ÊÇ°ó¶¨µÄkey£¬Ôò¹ıÂËµô
-                //IEÏÂ²»Ö§³ÖkeyÊôĞÔ,Òò´ËĞèÒª¸ù¾İstorageÖĞµÄÊı¾İÅĞ¶ÏkeyÖĞµÄÊı¾İÊÇ·ñ±ä»¯
+                //è‹¥å˜åŒ–çš„keyä¸æ˜¯ç»‘å®šçš„keyï¼Œåˆ™è¿‡æ»¤æ‰
+                //IEä¸‹ä¸æ”¯æŒkeyå±æ€§,å› æ­¤éœ€è¦æ ¹æ®storageä¸­çš„æ•°æ®åˆ¤æ–­keyä¸­çš„æ•°æ®æ˜¯å¦å˜åŒ–
                 if (e.key && _key != e.key) return
-                //»ñÈ¡ĞÂµÄÖµ
+                //è·å–æ–°çš„å€¼
                 var result = that._testAndSet(deserialize(e.newValue || localStorage.getItem(_key)));
                 if (that._isChange(result)) {
                     that.trigger('change', result)
@@ -554,12 +561,12 @@ TG.User = {
                 hash = {}
                 hash[key] = value
                 isNew = false
-                // Èç¹û²»ÊÇÕâ¸öhash´«µİµÄ»°£¬Ö»ĞŞ¸ÄÄ³¸ö×Ö¶Î
+                // å¦‚æœä¸æ˜¯è¿™ä¸ªhashä¼ é€’çš„è¯ï¼Œåªä¿®æ”¹æŸä¸ªå­—æ®µ
             }
             var result = this._testAndSet(hash, isNew);
             if (this._isChange(result)) {
                 this.trigger('change', result)
-                // ÑÓ³ÙäÖÈ¾£¬ÒÔÃâ×èÈû
+                // å»¶è¿Ÿæ¸²æŸ“ï¼Œä»¥å…é˜»å¡
                 $.nextTick(function () {
                     localStorage.setItem(_key, serialize(result[2]))
                 })
@@ -568,7 +575,7 @@ TG.User = {
         _isChange: function(result){
             return !$.isEmptyObject(result[0]) || !$.isEmptyObject(result[1])
         },
-        // ±È½ÏĞÂ¾ÉÊı¾İµÄ²îÒì
+        // æ¯”è¾ƒæ–°æ—§æ•°æ®çš„å·®å¼‚
         _testAndSet: function(valueHash, isNew){
             var i, newValue = {}, oldValue = {}, mix
             if (isNew) mix = $.mix({}, valueHash, _list)
@@ -577,8 +584,8 @@ TG.User = {
                 //alert(i + ' : ' + _list[i] + ' ' + valueHash[i])
                 //alert($.isEqual(_list[i], valueHash[i]))
                 if (mix.hasOwnProperty(i) && !$.isEqual(_list[i], valueHash[i])) {
-                    // Èç¹û²»ÏàµÈÔò¸³Öµ
-                    oldValue[i] = _list[i]
+                    // å¦‚æœä¸ç›¸ç­‰åˆ™èµ‹å€¼
+                    oldValue[i] = _list[i];
                     if (valueHash.hasOwnProperty(i)) _list[i] = newValue[i] = valueHash[i]
                     else delete _list[i]
                 }
@@ -611,16 +618,16 @@ $.fn.ellipsis = function() {
     }
     return function(str, container){
         return this.each(function(){
-            // ¸´ÖÆÒÔÏÂÕâ¸öµØÖ·
+            // å¤åˆ¶ä»¥ä¸‹è¿™ä¸ªåœ°å€
             var container = container;
             var oldH, str = str || '<span class="ellipsis">...</span>'
             container = container || this;
-            // »ñÈ¡max-heightÓÃÀ´¼ÆËãĞĞÊı
+            // è·å–max-heightç”¨æ¥è®¡ç®—è¡Œæ•°
             var maxHeight = window.getComputedStyle ? (getComputedStyle(container)['max-height'] || getComputedStyle(container)['maxHeight']) : container.currentStyle['max-height'];
             var match = maxHeight.match(/(0?\.?\d*)px$/);
             if (match) maxHeight = oldH = match[1];
             else return;
-            // ÓÃÒ»¸ö¿ÕÔªËØ²âÁ¿Ò»ÏÂĞĞ¸ß£¬È»ºóÈ¥µô
+            // ç”¨ä¸€ä¸ªç©ºå…ƒç´ æµ‹é‡ä¸€ä¸‹è¡Œé«˜ï¼Œç„¶åå»æ‰
             var s = $('<span></span>', {
                 html: 'o',
                 css: {
@@ -636,7 +643,7 @@ $.fn.ellipsis = function() {
             var line = Math.floor(maxHeight / lineHeight);
             maxHeight = line * lineHeight;
 
-            // È¥µôÒ»Ğ©ÑùÊ½£¬ÈÃÆä³¬³ö·¶Î§
+            // å»æ‰ä¸€äº›æ ·å¼ï¼Œè®©å…¶è¶…å‡ºèŒƒå›´
             container.style.maxHeight = 'none';
             container.style.overflowY = 'auto';
             container.style.height = 'auto';
@@ -650,7 +657,7 @@ $.fn.ellipsis = function() {
             } else loop.call($(this), $(container), maxHeight, str);
 
 
-            // ¸²¸ÇÑùÊ½
+            // è¦†ç›–æ ·å¼
             container.style.overflowY = 'hidden';
             container.style.maxHeight = oldH + 'px';
         })

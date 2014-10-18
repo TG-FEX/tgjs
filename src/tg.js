@@ -35,28 +35,28 @@ TG.check.condition = {
     'tel' : [/^[\d\-()]{6,20}$/],
     'qq' : [/^\d{5,16}$/],
     'cin' : [function(){
-        var wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ];// ¼ÓÈ¨Òò×Ó
-        var valideCode = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ];// Éí·İÖ¤ÑéÖ¤Î»Öµ.10´ú±íX
+        var wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1 ];// åŠ æƒå› å­
+        var valideCode = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ];// èº«ä»½è¯éªŒè¯ä½å€¼.10ä»£è¡¨X
         var isValidID = function (idCard) {
             idCard = $.trim(idCard);
             if (idCard.length == 15) {
                 return isValidBrithday_15(idCard);
             } else if (idCard.length == 18) {
-                var a_idCard = idCard.split("");// µÃµ½Éí·İÖ¤Êı×é
+                var a_idCard = idCard.split("");// å¾—åˆ°èº«ä»½è¯æ•°ç»„
                 return isValidBrithday_18(idCard) && isValidCheckcode(a_idCard);
             } else {
                 return false;
             }
         };
         var isValidCheckcode = function (a_idCard) {
-            var sum = 0; // ÉùÃ÷¼ÓÈ¨ÇóºÍ±äÁ¿
+            var sum = 0; // å£°æ˜åŠ æƒæ±‚å’Œå˜é‡
             if (a_idCard[17].toLowerCase() == 'x') {
-                a_idCard[17] = 10;// ½«×îºóÎ»ÎªxµÄÑéÖ¤ÂëÌæ»»Îª10·½±ãºóĞø²Ù×÷
+                a_idCard[17] = 10;// å°†æœ€åä½ä¸ºxçš„éªŒè¯ç æ›¿æ¢ä¸º10æ–¹ä¾¿åç»­æ“ä½œ
             }
             for ( var i = 0; i < 17; i++) {
-                sum += wi[i] * a_idCard[i];// ¼ÓÈ¨ÇóºÍ
+                sum += wi[i] * a_idCard[i];// åŠ æƒæ±‚å’Œ
             }
-            var valCodePosition = sum % 11;// µÃµ½ÑéÖ¤ÂëËùÎ»ÖÃ
+            var valCodePosition = sum % 11;// å¾—åˆ°éªŒè¯ç æ‰€ä½ç½®
             return a_idCard[17] == valideCode[valCodePosition];
         };
         var isValidBrithday_18 = function (idCard18){
@@ -64,7 +64,7 @@ TG.check.condition = {
             var month = idCard18.substring(10,12);
             var day = idCard18.substring(12,14);
             var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));
-            // ÕâÀïÓÃgetFullYear()»ñÈ¡Äê·İ£¬±ÜÃâÇ§Äê³æÎÊÌâ
+            // è¿™é‡Œç”¨getFullYear()è·å–å¹´ä»½ï¼Œé¿å…åƒå¹´è™«é—®é¢˜
             return !(temp_date.getFullYear() != parseFloat(year)
                 || temp_date.getMonth() != parseFloat(month) - 1
                 || temp_date.getDate() != parseFloat(day));
@@ -74,7 +74,7 @@ TG.check.condition = {
             var month = idCard15.substring(8,10);
             var day = idCard15.substring(10,12);
             var temp_date = new Date(year,parseFloat(month)-1,parseFloat(day));
-            // ¶ÔÓÚÀÏÉí·İÖ¤ÖĞµÄÄãÄêÁäÔò²»Ğè¿¼ÂÇÇ§Äê³æÎÊÌâ¶øÊ¹ÓÃgetYear()·½·¨
+            // å¯¹äºè€èº«ä»½è¯ä¸­çš„ä½ å¹´é¾„åˆ™ä¸éœ€è€ƒè™‘åƒå¹´è™«é—®é¢˜è€Œä½¿ç”¨getYear()æ–¹æ³•
             return !(temp_date.getYear() != parseFloat(year)
                 || temp_date.getMonth() != parseFloat(month) - 1
                 || temp_date.getDate() != parseFloat(day));

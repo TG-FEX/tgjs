@@ -11,9 +11,9 @@ TG.User = {
                 var data;
                 switch(error){
                     case 'timeout' :
-                        data = {State : -1, Msg:'µÇÂ¼³¬Ê±£¬ÇëÖØÊÔ¡£'}; break
+                        data = {State : -1, Msg:'ç™»å½•è¶…æ—¶ï¼Œè¯·é‡è¯•ã€‚'}; break
                     default :
-                        data = { State: -2, Msg: 'µÇÂ¼Êı¾İÒì³££¬ÇëÖØÊÔ¡£' };
+                        data = { State: -2, Msg: 'ç™»å½•æ•°æ®å¼‚å¸¸ï¼Œè¯·é‡è¯•ã€‚' };
                 }
                 dfd.reject(data);
             }
@@ -38,9 +38,9 @@ TG.User = {
                 var data;
                 switch(error){
                     case 'timeout' :
-                        data = {State : -1, Msg:'×¢Ïú³¬Ê±'}; break
+                        data = {State : -1, Msg:'æ³¨é”€è¶…æ—¶'}; break
                     default :
-                        data = { State: -2, Msg: '×¢ÏúÊ§°Ü£¬ÇëÖØÊÔ¡£' };
+                        data = { State: -2, Msg: 'æ³¨é”€å¤±è´¥ï¼Œè¯·é‡è¯•ã€‚' };
                 }
                 dfd.resolve(data);
             }
@@ -68,7 +68,7 @@ TG.User = {
         try {
             result = JSON.parse(value)
         } catch(e) {}
-        // ²»ÊÇ¶ÔÏóµÄÊ±ºò£¬½«ÆäÖµÎª¿Õ¶ÔÏó
+        // ä¸æ˜¯å¯¹è±¡çš„æ—¶å€™ï¼Œå°†å…¶å€¼ä¸ºç©ºå¯¹è±¡
         if (!$.isPlainObject(result)) result = {}
         return result
     }
@@ -79,21 +79,21 @@ TG.User = {
         userTicker: false,
         get: function(key){
             if (key) return _list[key]
-            // ÏÈ±¸·İÒ»ÏÂ£¬ÒÔÃâ±»Îó¸Ä
+            // å…ˆå¤‡ä»½ä¸€ä¸‹ï¼Œä»¥å…è¢«è¯¯æ”¹
             else return $.extend({}, _list);
         },
         init: function(){
-            //ChromeÏÂ(14.0.794.0)ÖØĞ´ÁËdocument.domainÖ®ºó»áµ¼ÖÂonstorage²»´¥·¢
-            //Ö§³ÖlocalStorageµÄÇé¿ö
+            //Chromeä¸‹(14.0.794.0)é‡å†™äº†document.domainä¹‹åä¼šå¯¼è‡´onstorageä¸è§¦å‘
+            //æ”¯æŒlocalStorageçš„æƒ…å†µ
             var callback = this._callback.bind(this);
             if ('onstorage' in document) {
-                // IE°óµ½document;
+                // IEç»‘åˆ°document;
                 document.attachEvent("onstorage", callback)
             } else if ($.support.localStorage) {
-                // ±ê×¼ä¯ÀÀÆ÷°óµ½window;
+                // æ ‡å‡†æµè§ˆå™¨ç»‘åˆ°window;
                 window.addEventListener("storage", callback)
             } else if (this.userTicker) {
-                // ÏÈÅÙ¸ö¿Ó
+                // å…ˆåˆ¨ä¸ªå‘
             } else {
                 // IE678
                 window.attachEvent('onfocus', callback)
@@ -102,13 +102,13 @@ TG.User = {
         },
         _callback: function(e){
             var that = this;
-            //IEÏÂ²»Ê¹ÓÃsetTimeout¾¹È»»ñÈ¡²»µ½¸Ä±äºóµÄÖµ?!
+            //IEä¸‹ä¸ä½¿ç”¨setTimeoutç«Ÿç„¶è·å–ä¸åˆ°æ”¹å˜åçš„å€¼?!
             $.nextTick(function(){
                 e = e || window.storageEvent
-                //Èô±ä»¯µÄkey²»ÊÇ°ó¶¨µÄkey£¬Ôò¹ıÂËµô
-                //IEÏÂ²»Ö§³ÖkeyÊôĞÔ,Òò´ËĞèÒª¸ù¾İstorageÖĞµÄÊı¾İÅĞ¶ÏkeyÖĞµÄÊı¾İÊÇ·ñ±ä»¯
+                //è‹¥å˜åŒ–çš„keyä¸æ˜¯ç»‘å®šçš„keyï¼Œåˆ™è¿‡æ»¤æ‰
+                //IEä¸‹ä¸æ”¯æŒkeyå±æ€§,å› æ­¤éœ€è¦æ ¹æ®storageä¸­çš„æ•°æ®åˆ¤æ–­keyä¸­çš„æ•°æ®æ˜¯å¦å˜åŒ–
                 if (e.key && _key != e.key) return
-                //»ñÈ¡ĞÂµÄÖµ
+                //è·å–æ–°çš„å€¼
                 var result = that._testAndSet(deserialize(e.newValue || localStorage.getItem(_key)));
                 if (that._isChange(result)) {
                     that.trigger('change', result)
@@ -122,12 +122,12 @@ TG.User = {
                 hash = {}
                 hash[key] = value
                 isNew = false
-                // Èç¹û²»ÊÇÕâ¸öhash´«µİµÄ»°£¬Ö»ĞŞ¸ÄÄ³¸ö×Ö¶Î
+                // å¦‚æœä¸æ˜¯è¿™ä¸ªhashä¼ é€’çš„è¯ï¼Œåªä¿®æ”¹æŸä¸ªå­—æ®µ
             }
             var result = this._testAndSet(hash, isNew);
             if (this._isChange(result)) {
                 this.trigger('change', result)
-                // ÑÓ³ÙäÖÈ¾£¬ÒÔÃâ×èÈû
+                // å»¶è¿Ÿæ¸²æŸ“ï¼Œä»¥å…é˜»å¡
                 $.nextTick(function () {
                     localStorage.setItem(_key, serialize(result[2]))
                 })
@@ -136,7 +136,7 @@ TG.User = {
         _isChange: function(result){
             return !$.isEmptyObject(result[0]) || !$.isEmptyObject(result[1])
         },
-        // ±È½ÏĞÂ¾ÉÊı¾İµÄ²îÒì
+        // æ¯”è¾ƒæ–°æ—§æ•°æ®çš„å·®å¼‚
         _testAndSet: function(valueHash, isNew){
             var i, newValue = {}, oldValue = {}, mix
             if (isNew) mix = $.mix({}, valueHash, _list)
@@ -145,7 +145,7 @@ TG.User = {
                 //alert(i + ' : ' + _list[i] + ' ' + valueHash[i])
                 //alert($.isEqual(_list[i], valueHash[i]))
                 if (mix.hasOwnProperty(i) && !$.isEqual(_list[i], valueHash[i])) {
-                    // Èç¹û²»ÏàµÈÔò¸³Öµ
+                    // å¦‚æœä¸ç›¸ç­‰åˆ™èµ‹å€¼
                     oldValue[i] = _list[i];
                     if (valueHash.hasOwnProperty(i)) _list[i] = newValue[i] = valueHash[i]
                     else delete _list[i]

@@ -3,8 +3,6 @@ module.exports = function(grunt) {
         package: grunt.file.readJSON('package.json')
     };
 
-    grunt.file.defaultEncoding = 'gb2312';
-
     options.concat = {
         options: {
             stripBanners: true,
@@ -27,10 +25,20 @@ module.exports = function(grunt) {
             nonull: true
         }
     };
-
+    options.uglify = {
+        'desktop': {
+            src: 'dist/<%= package.name %>.js',
+            dest: 'dist/<%= package.name %>.min.js'
+        },
+        'degrade': {
+            src: 'dist/<%= package.name %>-degrade.js',
+            dest: 'dist/<%= package.name %>-degrade.min.js'
+        }
+    }
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.initConfig(options);
     // Default task.
-    grunt.registerTask('default', ['concat']);
+    grunt.registerTask('default', ['concat', 'uglify']);
 
 };

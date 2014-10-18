@@ -163,7 +163,14 @@
                                 } catch (e) {
                                     err = 1;
                                 }
-                            if (err || typeof data != 'object' || !('State' in data) && !('Data' in data)) {
+                            if (!err && typeof data == 'object' && ('state_code' in data || 'message' in data)) {
+                                data = {
+                                    State: parseInt(data['state_code']),
+                                    Data: data.data,
+                                    Msg: data.message,
+                                    HelpLink: data['help_link']
+                                }
+                            } else if (err || typeof data != 'object' || !('State' in data) && !('Data' in data)) {
                                 // 如果转换错误，则当作字符串类型
                                 if (err && data.charAt(1) == ':' || $.isArray(data) && typeof data[0] == 'number')
                                     data = oldAjaxDataConventer(data, ':');

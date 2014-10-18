@@ -18,16 +18,16 @@ $.fn.ellipsis = function() {
     }
     return function(str, container){
         return this.each(function(){
-            // 复制以下这个地址
+            // 澶嶅埗浠ヤ笅杩欎釜鍦板潃
             var container = container;
             var oldH, str = str || '<span class="ellipsis">...</span>'
             container = container || this;
-            // 获取max-height用来计算行数
+            // 鑾峰彇max-height鐢ㄦ潵璁＄畻琛屾暟
             var maxHeight = window.getComputedStyle ? (getComputedStyle(container)['max-height'] || getComputedStyle(container)['maxHeight']) : container.currentStyle['max-height'];
             var match = maxHeight.match(/(0?\.?\d*)px$/);
             if (match) maxHeight = oldH = match[1];
             else return;
-            // 用一个空元素测量一下行高，然后去掉
+            // 鐢ㄤ竴涓┖鍏冪礌娴嬮噺涓�涓嬭楂橈紝鐒跺悗鍘绘帀
             var s = $('<span></span>', {
                 html: 'o',
                 css: {
@@ -43,7 +43,7 @@ $.fn.ellipsis = function() {
             var line = Math.floor(maxHeight / lineHeight);
             maxHeight = line * lineHeight;
 
-            // 去掉一些样式，让其超出范围
+            // 鍘绘帀涓�浜涙牱寮忥紝璁╁叾瓒呭嚭鑼冨洿
             container.style.maxHeight = 'none';
             container.style.overflowY = 'auto';
             container.style.height = 'auto';
@@ -57,7 +57,7 @@ $.fn.ellipsis = function() {
             } else loop.call($(this), $(container), maxHeight, str);
 
 
-            // 覆盖样式
+            // 瑕嗙洊鏍峰紡
             container.style.overflowY = 'hidden';
             container.style.maxHeight = oldH + 'px';
         })
